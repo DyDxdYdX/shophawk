@@ -1,6 +1,7 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-semibold mb-6">Forum</h2>
             <!-- Search Bar -->
             <div class="mb-6">
                 <form action="{{ route('posts.index') }}" method="GET" class="flex gap-2">
@@ -54,6 +55,18 @@
                             <a href="#" class="ml-1 hover:underline">{{ $post->user->name }}</a>
                             <span class="mx-1">•</span>
                             <span>{{ $post->created_at->diffForHumans() }}</span>
+                            @if($post->user_id === auth()->id() || auth()->user()->is_admin)
+                                <span class="mx-1">•</span>
+                                @if($post->user_id === auth()->id())
+                                    <a href="{{ route('posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                                    <span class="mx-1">•</span>
+                                @endif
+                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                                </form>
+                            @endif
                         </div>
                         <h2 class="text-xl font-semibold mb-2">
                             <a href="{{ route('posts.show', $post) }}" class="hover:underline">{{ $post->title }}</a>

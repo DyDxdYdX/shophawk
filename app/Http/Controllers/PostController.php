@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request)
     {
         $filter = $request->get('filter', 'hot');
@@ -52,19 +55,38 @@ class PostController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    public function vote(Request $request, Post $post)
+    public function edit(Post $post)
     {
+        // Check if user is authorized to edit this post
+        $this->authorize('update', $post);
+        
+        return view('posts.edit', compact('post'));
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        // Check if user is authorized to update this post
+        $this->authorize('update', $post);
+        
         $validated = $request->validate([
-            'vote' => 'required|in:up,down',
+            'title' => 'required|max:255',
+            'content' => 'required',
         ]);
 
-        // Simple voting system - you might want to create a separate votes table
-        // for a more sophisticated system that prevents multiple votes
-        $value = $validated['vote'] === 'up' ? 1 : -1;
-        $post->increment('votes', $value);
+        $post->update($validated);
 
-        return response()->json([
-            'votes' => $post->votes,
-        ]);
+        return redirect()->route('posts.show', $post)
+            ->with('success', 'Post updated successfully!');
+    }
+
+    public function destroy(Post $post)
+    {
+        // Check if user is authorized to delete this post
+        $this->authorize('delete', $post);
+        
+        $post->delete();
+
+        return redirect()->route('posts.index')
+            ->with('success', 'Post deleted successfully!');
     }
 } 

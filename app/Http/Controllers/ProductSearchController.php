@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductSearchController extends Controller
@@ -9,16 +10,30 @@ class ProductSearchController extends Controller
     public function search(Request $request)
     {
         $keyword = $request->keyword;
+        $shopeeProducts = [];
+        $lazadaProducts = [];
+        $localProducts = [];
         
-        // Shopee API Call
-        $shopeeProducts = $this->getShopeeProducts($keyword);
+        // Only fetch Shopee products if Shopee is selected
+        if ($request->shopee === 'true') {
+            $shopeeProducts = $this->getShopeeProducts($keyword);
+        }
         
-        // Lazada API Call
-        $lazadaProducts = $this->getLazadaProducts($keyword);
+        // Add Lazada products fetch if Lazada is selected
+        if ($request->lazada === 'true') {
+            $lazadaProducts = $this->getLazadaProducts($keyword);
+        }
+        
+        // Add Local database products fetch if Local is selected
+        if ($request->local === 'true') {
+            // Implement local database query here
+            $localProducts = $this->getLocalProducts($keyword); // Placeholder for now
+        }
         
         return view('search-results', [
             'shopeeProducts' => $shopeeProducts,
             'lazadaProducts' => $lazadaProducts,
+            'localProducts' => $localProducts,
             'keyword' => $keyword
         ]);
     }
@@ -57,7 +72,7 @@ class ProductSearchController extends Controller
         $formattedProducts = [];
 
         if (isset($data['data']['items'])) {
-            $items = array_slice($data['data']['items'], 0, 5);
+            $items = array_slice($data['data']['items'], 0, 10);
             foreach ($items as $item) {
                 $formattedProducts[] = [
                     'image' => $item['img'] ?? '',
@@ -108,22 +123,41 @@ class ProductSearchController extends Controller
         $formattedProducts = [];
 
         if (isset($data['data']['items'])) {
-            $items = array_slice($data['data']['items'], 0, 5);
+            $items = array_slice($data['data']['items'], 0, 10);
             foreach ($items as $item) {
                 $formattedProducts[] = [
-                    'image' => $item['image'] ?? '',
+                    'image' => $item['img'] ?? '',
                     'title' => $item['title'] ?? 'No title',
-                    'price' => $item['price'] ?? '0.00',
+                    'price' => $item['price_info']['sale_price'] ?? $item['price'] ?? '0.00',
                     'brand' => $item['brand'] ?? 'No brand',
                     'discount' => $item['discount'] ?? 0,
-                    'rating' => $item['rating'] ?? 0,
-                    'review_count' => $item['review_count'] ?? 0,
-                    'shop_name' => $item['shop_name'] ?? 'Unknown Shop',
-                    'item_url' => $item['url'] ?? '#'
+                    'liked_count' => $item['review_info']['review_count'] ?? 0,
+                    'comment_count' => $item['comment_count'] ?? 0,
+                    'shop_name' => $item['shop_info']['shop_name'] ?? 'Unknown Shop',
+                    'item_url' => $item['product_url'] ?? '#'
                 ];
             }
         }
 
         return $formattedProducts;
+    }
+
+    private function getLocalProducts($keyword)
+    {
+        $products = Product::where('title', 'LIKE', "%{$keyword}%")
+            ->orWhere('brand', 'LIKE', "%{$keyword}%")
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        return $products->map(function($product) {
+            return [
+                'image' => $product->img_link,
+                'title' => $product->title,
+                'price' => $product->price,
+                'brand' => $product->brand,
+                'item_url' => $product->product_link,
+            ];
+        })->toArray();
     }
 }

@@ -31,9 +31,9 @@
                             {{ __('Dashboard') }}
                         </x-nav-link>
 
-                        <x-nav-link :href="route('forum')" :active="request()->routeIs('forum')" 
+                        <x-nav-link :href="route('forum')" :active="request()->routeIs('forum') || request()->routeIs('posts.show')"
                             class="rounded-md px-3 py-2 text-sm font-medium" 
-                            :class="request()->routeIs('forum') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                            :class="request()->routeIs('forum') || request()->routeIs('posts.show') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
                             {{ __('Forum') }}
                         </x-nav-link>
 
@@ -48,6 +48,20 @@
                             :class="request()->routeIs('contact') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
                             {{ __('Contact') }}
                         </x-nav-link>
+
+                        @if (Auth::user()->is_admin)
+                            <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')" 
+                                class="rounded-md px-3 py-2 text-sm font-medium" 
+                                :class="request()->routeIs('products.*') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                                {{ __('Products') }}
+                            </x-nav-link>
+
+                            <x-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')" 
+                                class="rounded-md px-3 py-2 text-sm font-medium" 
+                                :class="request()->routeIs('news.*') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                                {{ __('News') }}
+                            </x-nav-link>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -101,9 +115,9 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('forum')" :active="request()->routeIs('forum')"
+            <x-responsive-nav-link :href="route('forum')" :active="request()->routeIs('forum') || request()->routeIs('posts.show')"
                 class="block rounded-md px-3 py-2 text-base font-medium"
-                :class="request()->routeIs('forum') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                :class="request()->routeIs('forum') || request()->routeIs('posts.show') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
                 {{ __('Forum') }}
             </x-responsive-nav-link>
 
@@ -118,6 +132,20 @@
                 :class="request()->routeIs('contact') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
                 {{ __('Contact') }}
             </x-responsive-nav-link>
+
+            @if (Auth::user()->is_admin)
+                <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')"
+                    class="block rounded-md px-3 py-2 text-base font-medium"
+                    :class="request()->routeIs('products.*') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                    {{ __('Products') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')"
+                    class="block rounded-md px-3 py-2 text-base font-medium"
+                    :class="request()->routeIs('news.*') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                    {{ __('News') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
     </div>
 </nav>

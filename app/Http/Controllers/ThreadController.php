@@ -20,16 +20,34 @@ class ThreadController extends Controller
             'user_id' => auth()->id()
         ]);
 
-        return back()->with('success', 'Thread posted successfully!');
+        return redirect()->back();
+    }
+
+    public function update(Request $request, Thread $thread)
+    {
+        // Check if user is authorized to update this thread
+        if ($thread->user_id !== auth()->id() && !auth()->user()->is_admin) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'content' => 'required|string'
+        ]);
+
+        $thread->update($validated);
+
+        return redirect()->back();
     }
 
     public function destroy(Thread $thread)
     {
-        if ($thread->user_id !== auth()->id()) {
+        // Check if user is authorized to delete this thread
+        if ($thread->user_id !== auth()->id() && !auth()->user()->is_admin) {
             abort(403);
         }
 
         $thread->delete();
-        return back()->with('success', 'Thread deleted successfully!');
+
+        return redirect()->back();
     }
 }

@@ -6,22 +6,11 @@
                 <div class="flex items-center">
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
-                            <a href="{{ route('home') }}" 
-                               class="rounded-md px-3 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                                Home
-                            </a>
-                            <a href="{{ route('forum') }}" 
-                               class="rounded-md px-3 py-2 text-sm font-medium {{ request()->routeIs('forum') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                                Forum
-                            </a>
-                            <a href="{{ route('about') }}" 
-                               class="rounded-md px-3 py-2 text-sm font-medium {{ request()->routeIs('about') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                                About
-                            </a>
-                            <a href="{{ route('contact') }}" 
-                               class="rounded-md px-3 py-2 text-sm font-medium {{ request()->routeIs('contact') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-                                Contact
-                            </a>
+            <x-nav-link :href="route('home')" :active="request()->routeIs('home')" 
+                                class="rounded-md px-3 py-2 text-sm font-medium" 
+                                :class="request()->routeIs('home') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                                {{ __('Home') }}
+                            </x-nav-link>
                         </div>
                     </div>
                 </div>
@@ -40,6 +29,17 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div :class="{'block': open, 'hidden': ! open}" class="sm:hidden">
+        <div class="space-y-1 px-2 pb-3 pt-2">
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')"
+                class="block rounded-md px-3 py-2 text-base font-medium"
+                :class="request()->routeIs('home') ? 'bg-gray-900 text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
+                {{ __('Home') }}
+            </x-responsive-nav-link>
         </div>
     </div>
 </nav> 
