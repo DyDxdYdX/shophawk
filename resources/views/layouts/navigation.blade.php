@@ -68,6 +68,41 @@
 
             <!-- Settings Dropdown -->
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <!-- Notification Bell -->
+                <div class="relative ml-3">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <svg class="h-6 w-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                                @if(auth()->user()->unreadNotifications->count() > 0)
+                                    <span class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
+                                        {{ auth()->user()->unreadNotifications->count() }}
+                                    </span>
+                                @endif
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            @forelse(auth()->user()->unreadNotifications as $notification)
+                                <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                                    {{ $notification->data['message'] }}
+                                    <form action="{{ route('notifications.mark-as-read', $notification->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 ml-2">
+                                            Mark as read
+                                        </button>
+                                    </form>
+                                </div>
+                            @empty
+                                <div class="px-4 py-2 text-sm text-gray-700">
+                                    No new notifications
+                                </div>
+                            @endforelse
+                        </x-slot>
+                    </x-dropdown>
+                </div>
 
                 <div class="relative ml-3">
                     <x-dropdown align="right" width="48">

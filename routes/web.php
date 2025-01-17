@@ -106,6 +106,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/chat/messages/{message}', [ChatController::class, 'deleteMessage'])->name('chat.delete');
 
     Route::get('/feedback/export', [FeedbackController::class, 'export'])->name('feedback.export');
+
+    Route::post('/notifications/{notification}/mark-as-read', function ($notification) {
+        auth()->user()->notifications()->findOrFail($notification)->markAsRead();
+        return back();
+    })->name('notifications.mark-as-read');
 });
 
 // Public news routes

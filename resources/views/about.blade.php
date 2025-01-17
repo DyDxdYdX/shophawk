@@ -28,8 +28,9 @@
                             <p class="mb-4">This website is created for educational purposes as part of a final year project. 
                             It serves as a testing platform to demonstrate and evaluate web development concepts and practices.</p>
                             
-                            <p>Shophawk Guru - Shop Assisting Tool is a web application designed to assist user in making online purchases on e-commerce sites. This project seeks to tackle issues such as deal discovery difficulty, product choice overwhelm and pricing transparency issue.</p>
+                            <p class="mb-4">Shophawk Guru - Shop Assisting Tool is a web application designed to assist user in making online purchases on e-commerce sites. This project seeks to tackle issues such as deal discovery difficulty, product choice overwhelm and pricing transparency issue.</p>
                             
+                            <p class="mb-4">Made for community by community.</p>
                         </div>
 
                         <!-- Feedback Form Section -->

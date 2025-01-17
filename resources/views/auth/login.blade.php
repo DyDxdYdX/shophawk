@@ -57,4 +57,16 @@
             </p>
         </div>
     </div>
+
+    <script>
+        if (performance.navigation.type === 2) {
+            location.reload(true);
+        }
+        
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+    </script>
 </x-guest-layout>

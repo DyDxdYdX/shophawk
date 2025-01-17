@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Notifications\PostDeletedNotification;
 
 class PostController extends Controller
 {
@@ -79,10 +80,23 @@ class PostController extends Controller
             ->with('success', 'Post updated successfully!');
     }
 
-    public function destroy(Post $post)
+    public function destroy(Post $post, Request $request)
     {
         // Check if user is authorized to delete this post
         $this->authorize('delete', $post);
+        
+        // If an admin is deleting someone else's post, require and validate reason
+        if (auth()->user()->is_admin && auth()->id() !== $post->user_id) {
+            $validated = $request->validate([
+                'reason' => 'required|string|max:255'
+            ]);
+            
+            $post->user->notify(new PostDeletedNotification(
+                $post, 
+                auth()->user(),
+                $validated['reason']
+            ));
+        }
         
         $post->delete();
 

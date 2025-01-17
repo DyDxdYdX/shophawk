@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Message;
+use App\Notifications\NewChatMessageNotification;
 
 class ChatController extends Controller
 {
@@ -40,6 +41,10 @@ class ChatController extends Controller
             'receiver_id' => $request->receiver_id,
             'message' => $request->message
         ]);
+
+        // Send notification to receiver
+        $receiver = User::find($request->receiver_id);
+        $receiver->notify(new NewChatMessageNotification($message, auth()->user()));
 
         return response()->json($message);
     }

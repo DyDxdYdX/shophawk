@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use App\Notifications\ThreadDeletedNotification;
+use App\Notifications\NewThreadNotification;
 
 class ThreadController extends Controller
 {
@@ -19,6 +21,12 @@ class ThreadController extends Controller
             'post_id' => $validated['post_id'],
             'user_id' => auth()->id()
         ]);
+
+        // Notify the post owner if it's not their own thread
+        $post = $thread->post;
+        if ($post->user_id !== auth()->id()) {
+            $post->user->notify(new NewThreadNotification($thread, auth()->user()));
+        }
 
         return redirect()->back();
     }
@@ -39,11 +47,24 @@ class ThreadController extends Controller
         return redirect()->back();
     }
 
-    public function destroy(Thread $thread)
+    public function destroy(Request $request, Thread $thread)
     {
         // Check if user is authorized to delete this thread
         if ($thread->user_id !== auth()->id() && !auth()->user()->is_admin) {
             abort(403);
+        }
+
+        // If an admin is deleting someone else's thread, require and validate reason
+        if (auth()->user()->is_admin && auth()->id() !== $thread->user_id) {
+            $validated = $request->validate([
+                'reason' => 'required|string|max:255'
+            ]);
+            
+            $thread->user->notify(new ThreadDeletedNotification(
+                $thread,
+                auth()->user(),
+                $validated['reason']
+            ));
         }
 
         $thread->delete();

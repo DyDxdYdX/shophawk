@@ -39,9 +39,18 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
-        return redirect('/');
+        
+        // Clear all cookies
+        $cookies = $request->cookies->all();
+        $response = redirect()->route('login');
+        
+        foreach($cookies as $name => $value) {
+            $response->withCookie(cookie()->forget($name));
+        }
+        
+        return $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+                       ->header('Pragma', 'no-cache')
+                       ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 }

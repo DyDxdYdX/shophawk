@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'auth.nocache' => \App\Http\Middleware\AuthenticateWithoutCache::class,
     ];
 
     /**
@@ -40,6 +41,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\PreventBackHistory::class,
         ],
     ];
 
@@ -53,5 +55,6 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // ... existing middleware ...
         'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+        'auth.nocache' => \App\Http\Middleware\AuthenticateWithoutCache::class,
     ];
 } 

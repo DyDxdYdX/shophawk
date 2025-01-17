@@ -20,6 +20,10 @@
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
         <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
     </head>
     <body class="font-sans antialiased">
         <!-- Background Image with Overlay (Adjusted z-index) -->
@@ -71,5 +75,40 @@
                 Final Year Project Development
             </footer>
         </div>
+
+        @auth
+        <script>
+            // Prevent back button after logout
+            window.onload = function() {
+                if(window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.href);
+                }
+            }
+            
+            // Force reload on back/forward
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    window.location.reload(true);
+                }
+            });
+
+            // Handle logout
+            document.addEventListener('DOMContentLoaded', function() {
+                let logoutForms = document.querySelectorAll('form[action$="logout"]');
+                logoutForms.forEach(function(form) {
+                    form.addEventListener('submit', function() {
+                        // Clear all storage
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        
+                        // Clear all cookies
+                        document.cookie.split(";").forEach(function(c) { 
+                            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                        });
+                    });
+                });
+            });
+        </script>
+        @endauth
     </body>
 </html>
