@@ -96,14 +96,6 @@
                                oninput="applyFilters()">
                     </div>
                 </div>
-
-                <!-- Apply Filters Button -->
-                <div class="mt-4 flex justify-end">
-                    <button onclick="applyFilters()" 
-                            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        Apply Filters
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -296,8 +288,8 @@
             background: #4f46e5;
             cursor: pointer;
             border-radius: 50%;
-            width: 20px !important;
-            height: 20px !important;
+            width: 25px !important;
+            height: 25px !important;
             right: -10px !important;
         }
         .noUi-handle:before,

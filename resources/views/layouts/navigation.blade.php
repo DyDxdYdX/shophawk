@@ -17,6 +17,10 @@
 
             <!-- Logo and Navigation Links -->
             <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                <!-- Logo -->
+                <a href="{{ route('home') }}" class="flex items-center">
+                    <img src="{{ asset('images/Shophawk no text.png') }}" alt="ShopHawk Logo" class="h-8 w-auto rounded-full">
+                </a>
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4">
                         <x-nav-link :href="route('home')" :active="request()->routeIs('home')" 

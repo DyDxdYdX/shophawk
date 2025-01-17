@@ -134,7 +134,7 @@
         function goToSearch() {
             const keyword = document.getElementById('keyword').value;
             if (keyword.trim()) {
-                const isAuthenticated = {!! auth()->check() ? 'true' : 'false' !!};
+                const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
                 const shopee = document.getElementById('shopee').checked;
                 const lazada = document.getElementById('lazada').checked;
                 const local = document.getElementById('local').checked;
