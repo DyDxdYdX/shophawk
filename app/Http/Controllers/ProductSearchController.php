@@ -57,7 +57,7 @@ class ProductSearchController extends Controller
         
         curl_setopt_array($curl, [
             CURLOPT_URL => "http://api.tmapi.top/shopee/search/items/v2?" . http_build_query([
-                'apiToken' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6IkRleHRlckR5a2VzIiwiQ29taWQiOm51bGwsIlJvbGVpZCI6bnVsbCwiaXNzIjoidG1hcGkiLCJzdWIiOiJEZXh0ZXJEeWtlcyIsImF1ZCI6WyIiXSwiaWF0IjoxNzE5NTg2MzY0fQ.CQP8FuisiLQRsKXVMhLDCYH5e9Y6fzCfTjJ2ctvDjIA',
+                'apiToken' => env('SHOPEE_API_TOKEN'),
                 'site' => 'my',
                 'keyword' => $keyword,
                 'by' => 'relevancy',
@@ -137,7 +137,7 @@ class ProductSearchController extends Controller
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => [
                 "x-rapidapi-host: lazada-api.p.rapidapi.com",
-                "x-rapidapi-key: 6dd76c5110msh42a1dca20c9c819p1fb6fdjsnd74408aa3011"
+                "x-rapidapi-key: " . env('LAZADA_API_KEY')
             ],
         ]);
 
