@@ -50,21 +50,38 @@
         <div class="max-w-7xl mx-auto mt-8 mb-6">
             <div class="bg-white shadow rounded-lg p-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Calculate min and max prices from all products -->
+                    @php
+                        $allProducts = collect([])
+                            ->concat($shopeeProducts ?? [])
+                            ->concat($lazadaProducts ?? [])
+                            ->concat($localProducts ?? []);
+                        
+                        $minDataPrice = $allProducts->min('price') ?? 0;
+                        $maxDataPrice = $allProducts->max('price') ?? 1000;
+                        
+                        // Round to nearest tens for better ranges
+                        $minDataPrice = floor($minDataPrice / 10) * 10;
+                        $maxDataPrice = ceil($maxDataPrice / 10) * 10;
+                    @endphp
+
                     <!-- Price Range Filter -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range (RM)</label>
-                        <div class="flex items-center gap-2">
-                            <input type="number" 
-                                   id="minPrice" 
-                                   placeholder="Min" 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                   value="{{ request()->get('min_price') }}">
-                            <span class="text-gray-500">-</span>
-                            <input type="number" 
-                                   id="maxPrice" 
-                                   placeholder="Max" 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                   value="{{ request()->get('max_price') }}">
+                        <label class="block text-sm font-medium text-gray-700 mb-4">
+                            Price Range: 
+                            <span class="ml-1 text-base">
+                                RM<span id="minPriceLabel" class="mx-1">{{ request()->get('min_price', $minDataPrice) }}</span> - 
+                                RM<span id="maxPriceLabel" class="mx-1">{{ request()->get('max_price', $maxDataPrice) }}</span>
+                            </span>
+                        </label>
+                        <div class="relative px-2">
+                            <div id="price-range" 
+                                 class="mt-2"
+                                 data-min-price="{{ request()->get('min_price', $minDataPrice) }}"
+                                 data-max-price="{{ request()->get('max_price', $maxDataPrice) }}"
+                                 data-range-min="{{ $minDataPrice }}"
+                                 data-range-max="{{ $maxDataPrice }}">
+                            </div>
                         </div>
                     </div>
 
@@ -75,7 +92,8 @@
                                id="brand" 
                                placeholder="Enter brand name" 
                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                               value="{{ request()->get('brand') }}">
+                               value="{{ request()->get('brand') }}"
+                               oninput="applyFilters()">
                     </div>
                 </div>
 
@@ -119,8 +137,8 @@
                             <a href="{{ $product['item_url'] }}" 
                                target="_blank" 
                                class="product-card bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300 block"
-                               data-price="{{ $product['price'] }}"
-                               data-brand="{{ $product['brand'] ?? '' }}">
+                               data-price="{{ number_format((float)$product['price'], 2, '.', '') }}"
+                               data-brand="{{ strtolower($product['brand'] ?? '') }}">
                                 <img src="{{ $product['image'] }}" 
                                      alt="{{ $product['title'] }}" 
                                      class="w-full h-32 object-cover">
@@ -269,81 +287,73 @@
         @endif
     </div>
 
-    @push('scripts')
+    <style>
+        .noUi-connect {
+            background: #4f46e5;
+        }
+        .noUi-handle {
+            border: 1px solid #4f46e5;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            right: -10px !important;
+        }
+        .noUi-handle:before,
+        .noUi-handle:after {
+            display: none;
+        }
+        .noUi-target {
+            border-color: #e5e7eb;
+            background-color: #e5e7eb;
+        }
+    </style>
+
     <script>
         function goToSearch() {
+            console.log('goToSearch function called');
             const keyword = document.getElementById('keyword').value;
+            console.log('keyword:', keyword);
+            
             if (keyword.trim()) {
                 const shopee = document.getElementById('shopee').checked;
                 const lazada = document.getElementById('lazada').checked;
                 const local = document.getElementById('local').checked;
+                
+                console.log('sources:', { shopee, lazada, local });
                 
                 if (!shopee && !lazada && !local) {
                     alert('Please select at least one source to search from');
                     return;
                 }
 
-                applyFilters(keyword);
+                const priceRange = document.getElementById('price-range');
+                const values = priceRange.noUiSlider.get();
+                const brand = document.getElementById('brand').value;
+
+                console.log('price range:', values);
+                console.log('brand:', brand);
+
+                let url = `/search-products?keyword=${encodeURIComponent(keyword)}`;
+                url += `&shopee=${shopee}&lazada=${lazada}&local=${local}`;
+                url += `&min_price=${values[0]}&max_price=${values[1]}`;
+                if (brand) url += `&brand=${encodeURIComponent(brand)}`;
+
+                console.log('redirecting to:', url);
+                window.location.href = url;
             }
         }
 
-        function applyFilters() {
-            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
-            const brand = document.getElementById('brand').value.toLowerCase().trim();
-
-            // Filter Shopee products
-            const shopeeSection = document.querySelector('[data-source="shopee"]');
-            if (shopeeSection) {
-                const shopeeProducts = shopeeSection.querySelectorAll('.product-card');
-                shopeeProducts.forEach(product => {
-                    const price = parseFloat(product.dataset.price);
-                    const productBrand = (product.dataset.brand || '').toLowerCase();
-                    
-                    const matchesPrice = (price >= minPrice) && (maxPrice === Infinity || price <= maxPrice);
-                    const matchesBrand = !brand || productBrand.includes(brand);
-                    
-                    product.style.display = (matchesPrice && matchesBrand) ? 'block' : 'none';
-                });
-            }
-
-            // Filter Lazada products
-            const lazadaSection = document.querySelector('[data-source="lazada"]');
-            if (lazadaSection) {
-                const lazadaProducts = lazadaSection.querySelectorAll('.product-card');
-                lazadaProducts.forEach(product => {
-                    const price = parseFloat(product.dataset.price);
-                    const productBrand = (product.dataset.brand || '').toLowerCase();
-                    
-                    const matchesPrice = (price >= minPrice) && (maxPrice === Infinity || price <= maxPrice);
-                    const matchesBrand = !brand || productBrand.includes(brand);
-                    
-                    product.style.display = (matchesPrice && matchesBrand) ? 'block' : 'none';
-                });
-            }
-
-            // Filter Other products
-            const localSection = document.querySelector('[data-source="local"]');
-            if (localSection) {
-                const localProducts = localSection.querySelectorAll('.product-card');
-                localProducts.forEach(product => {
-                    const price = parseFloat(product.dataset.price);
-                    const productBrand = (product.dataset.brand || '').toLowerCase();
-                    
-                    const matchesPrice = (price >= minPrice) && (maxPrice === Infinity || price <= maxPrice);
-                    const matchesBrand = !brand || productBrand.includes(brand);
-                    
-                    product.style.display = (matchesPrice && matchesBrand) ? 'block' : 'none';
-                });
-            }
-        }
-
-        // Also allow Enter key to trigger search
+        // Enter key event listener
         document.getElementById('keyword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 goToSearch();
             }
         });
     </script>
+
+    @push('scripts')
+    // Any other scripts can go here
     @endpush
 </x-app-layout> 

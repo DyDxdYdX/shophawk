@@ -18,6 +18,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     </head>
     <body class="font-sans antialiased">
         <!-- Background Image with Overlay (Adjusted z-index) -->

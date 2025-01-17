@@ -26,8 +26,8 @@ class PostController extends Controller
             ->when($filter === 'new', function ($query) {
                 return $query->latest();
             })
-            ->paginate(15)
-            ->withQueryString(); // This preserves both filter and search parameters in pagination
+            ->paginate(5)
+            ->appends(['search' => $search, 'filter' => $filter]);
         
         return view('forum', compact('posts', 'filter'));
     }

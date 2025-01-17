@@ -104,6 +104,8 @@ Route::middleware(['auth'])->group(function () {
     // New routes for edit and delete
     Route::put('/chat/messages/{message}', [ChatController::class, 'updateMessage'])->name('chat.update');
     Route::delete('/chat/messages/{message}', [ChatController::class, 'deleteMessage'])->name('chat.delete');
+
+    Route::get('/feedback/export', [FeedbackController::class, 'export'])->name('feedback.export');
 });
 
 // Public news routes

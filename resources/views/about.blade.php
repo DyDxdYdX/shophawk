@@ -33,11 +33,25 @@
                         </div>
 
                         <!-- Feedback Form Section -->
+                        @if (!auth()->user()->is_admin)
                         <div class="mt-8">
                             <h2 class="text-xl font-semibold mb-4">Submit Feedback</h2>
                             <form action="{{ route('feedback.store') }}" method="POST">
                                 @csrf
                                 <div class="space-y-4">
+                                    <div>
+                                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                                        <select name="category" id="category" 
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('category') border-red-500 @enderror">
+                                            <option value="general" {{ old('category') == 'general' ? 'selected' : '' }}>General</option>
+                                            <option value="bug" {{ old('category') == 'bug' ? 'selected' : '' }}>Bug Report</option>
+                                            <option value="feature" {{ old('category') == 'feature' ? 'selected' : '' }}>Feature Request</option>
+                                            <option value="improvement" {{ old('category') == 'improvement' ? 'selected' : '' }}>Improvement</option>
+                                        </select>
+                                        @error('category')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
                                     <div>
                                         <textarea name="feedback" rows="4" 
                                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('feedback') border-red-500 @enderror"
@@ -55,17 +69,48 @@
                                 </div>
                             </form>
                         </div>
+                        @endif
 
                         <!-- Feedback History Section -->
                         <div class="mt-8 space-y-6">
-                            <h2 class="text-xl font-semibold mb-4">Your Feedback History</h2>
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold">
+                                    @if (auth()->user()->is_admin)
+                                        All Feedback
+                                    @else
+                                        Your Feedback History
+                                    @endif
+                                </h2>
+                                @if (auth()->user()->is_admin)
+                                    <a href="{{ route('feedback.export') }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Download Report
+                                    </a>
+                                @endif
+                            </div>
                             @forelse ($feedbacks as $feedback)
-                                <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <div class="bg-gray-50 p-4 rounded-lg shadow-sm" data-feedback-id="{{ $feedback->id }}" data-category="{{ $feedback->category }}">
                                     <div class="flex justify-between items-start">
                                         <div class="flex-grow">
-                                            <p class="text-gray-800">{{ $feedback->feedback }}</p>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                {{ $feedback->category === 'bug' ? 'bg-red-100 text-red-800' : 
+                                                   ($feedback->category === 'feature' ? 'bg-green-100 text-green-800' : 
+                                                   ($feedback->category === 'improvement' ? 'bg-blue-100 text-blue-800' : 
+                                                    'bg-gray-100 text-gray-800')) }}">
+                                                {{ ucfirst($feedback->category) }}
+                                            </span>
+                                            <p class="text-gray-800 mt-2">{{ $feedback->feedback }}</p>
                                             <span class="text-sm text-gray-500">Submitted: {{ $feedback->created_at->diffForHumans() }}</span>
+                                            @if (auth()->user()->is_admin)
+                                                <div class="mt-1">
+                                                    <span class="text-sm text-gray-500">By: {{ $feedback->name }}</span>
+                                                </div>
+                                            @endif
                                         </div>
+                                        @if (!auth()->user()->is_admin)
                                         <div class="flex space-x-2">
                                             <button onclick="editFeedback({{ $feedback->id }}, '{{ addslashes($feedback->feedback) }}')" 
                                                     class="text-blue-600 hover:text-blue-800">
@@ -84,6 +129,7 @@
                                                 </button>
                                             </form>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             @empty
@@ -100,6 +146,16 @@
                                     @method('PUT')
                                     <textarea name="feedback" id="editFeedbackText" rows="4" 
                                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    <div class="mt-2">
+                                        <label for="editCategory" class="block text-sm font-medium text-gray-700">Category</label>
+                                        <select name="category" id="editCategory" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                            <option value="general">General</option>
+                                            <option value="bug">Bug Report</option>
+                                            <option value="feature">Feature Request</option>
+                                            <option value="improvement">Improvement</option>
+                                        </select>
+                                    </div>
                                     <div class="mt-4 flex justify-end space-x-2">
                                         <button type="button" onclick="closeEditModal()" 
                                                 class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
@@ -116,8 +172,10 @@
 
                         <script>
                         function editFeedback(id, feedback) {
+                            const feedbackElement = document.querySelector(`[data-feedback-id="${id}"]`);
                             document.getElementById('editModal').classList.remove('hidden');
                             document.getElementById('editFeedbackText').value = feedback;
+                            document.getElementById('editCategory').value = feedbackElement.dataset.category;
                             document.getElementById('editForm').action = `/feedback/${id}`;
                         }
 

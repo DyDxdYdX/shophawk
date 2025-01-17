@@ -40,6 +40,19 @@ class ProductSearchController extends Controller
 
     private function getShopeeProducts($keyword)
     {
+        // Read JSON file
+        $jsonData = file_get_contents(public_path('json/shopee_data.json'));
+        $products = json_decode($jsonData, true);
+        
+        // Filter products based on keyword (case-insensitive)
+        $filteredProducts = array_filter($products, function($product) use ($keyword) {
+            return stripos($product['title'], $keyword) !== false || 
+                   stripos($product['brand'], $keyword) !== false;
+        });
+
+        return array_values($filteredProducts); // Reset array keys
+
+        /* API Implementation
         $curl = curl_init();
         
         curl_setopt_array($curl, [
@@ -89,19 +102,32 @@ class ProductSearchController extends Controller
         }
 
         return $formattedProducts;
+        */
     }
 
     private function getLazadaProducts($keyword)
     {
+        // Read JSON file
+        $jsonData = file_get_contents(public_path('json/lazada_data.json'));
+        $products = json_decode($jsonData, true);
+        
+        // Filter products based on keyword (case-insensitive)
+        $filteredProducts = array_filter($products, function($product) use ($keyword) {
+            return stripos($product['title'], $keyword) !== false || 
+                   stripos($product['brand'], $keyword) !== false;
+        });
+
+        return array_values($filteredProducts); // Reset array keys
+
+        /* API Implementation
         $curl = curl_init();
         
         curl_setopt_array($curl, [
-            CURLOPT_URL => "http://api.tmapi.top/lazada/search/items?" . http_build_query([
-                'apiToken' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6IkRleHRlckR5a2VzIiwiQ29taWQiOm51bGwsIlJvbGVpZCI6bnVsbCwiaXNzIjoidG1hcGkiLCJzdWIiOiJEZXh0ZXJEeWtlcyIsImF1ZCI6WyIiXSwiaWF0IjoxNzE5NTg2MzY0fQ.CQP8FuisiLQRsKXVMhLDCYH5e9Y6fzCfTjJ2ctvDjIA',
-                'site' => 'my',
+            CURLOPT_URL => "https://lazada-api.p.rapidapi.com/lazada/search/items?" . http_build_query([
                 'keywords' => $keyword,
-                'sort' => 'pop',
-                'page' => 1
+                'site' => 'my',
+                'page' => 1,
+                'sort' => 'pop'
             ]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -109,6 +135,10 @@ class ProductSearchController extends Controller
             CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "x-rapidapi-host: lazada-api.p.rapidapi.com",
+                "x-rapidapi-key: 6dd76c5110msh42a1dca20c9c819p1fb6fdjsnd74408aa3011"
+            ],
         ]);
 
         $response = curl_exec($curl);
@@ -130,7 +160,8 @@ class ProductSearchController extends Controller
                     'title' => $item['title'] ?? 'No title',
                     'price' => $item['price_info']['sale_price'] ?? $item['price'] ?? '0.00',
                     'brand' => $item['brand'] ?? 'No brand',
-                    'discount' => $item['discount'] ?? 0,
+                    'discount' => isset($item['price_info']['origin_price']) ? 
+                        round((1 - ($item['price_info']['sale_price'] / $item['price_info']['origin_price'])) * 100) . '%' : '0%',
                     'liked_count' => $item['review_info']['review_count'] ?? 0,
                     'comment_count' => $item['comment_count'] ?? 0,
                     'shop_name' => $item['shop_info']['shop_name'] ?? 'Unknown Shop',
@@ -140,6 +171,7 @@ class ProductSearchController extends Controller
         }
 
         return $formattedProducts;
+        */
     }
 
     private function getLocalProducts($keyword)

@@ -87,7 +87,7 @@
 
             <!-- Pagination -->
             <div class="mt-6">
-                {{ $posts->links() }}
+                {{ $posts->appends(['search' => request('search'), 'filter' => $filter])->links() }}
             </div>
         </div>
     </div>
