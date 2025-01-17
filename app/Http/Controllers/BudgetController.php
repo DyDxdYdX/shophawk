@@ -49,4 +49,16 @@ class BudgetController extends Controller
         $budget->delete();
         return back()->with('success', 'Budget category deleted successfully');
     }
+
+    public function addExpense(Request $request, Budget $budget)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+        ]);
+
+        $budget->spent += $request->amount;
+        $budget->save();
+
+        return back()->with('success', 'Expense added successfully');
+    }
 }

@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
     Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+    Route::post('/budgets/{budget}/add-expense', [BudgetController::class, 'addExpense'])->name('budgets.add-expense');
 
     // Feedback routes
     Route::get('feedback', [FeedbackController::class, 'index'])

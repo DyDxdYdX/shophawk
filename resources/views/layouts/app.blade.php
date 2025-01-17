@@ -24,6 +24,10 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
         <meta http-equiv="Pragma" content="no-cache">
         <meta http-equiv="Expires" content="0">
+
+        <style>
+            [x-cloak] { display: none !important; }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <!-- Background Image with Overlay (Adjusted z-index) -->
@@ -43,15 +47,14 @@
             <!-- Chat Button Circle -->
             @auth
                 <div class="fixed bottom-8 right-8 z-50">
-                    <button 
-                        onclick="window.location.href='{{ route('chat') }}'"
-                        class="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                    <a href="{{ route('chat') }}"
+                       class="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
                     >
                         <i class="fas fa-comments text-xl"></i>
                         
                         <!-- Online Status Indicator -->
                         <span class="absolute top-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></span>
-                    </button>
+                    </a>
                 </div>
             @endauth
 

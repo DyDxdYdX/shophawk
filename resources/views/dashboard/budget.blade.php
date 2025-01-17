@@ -122,9 +122,8 @@
                         </div>
 
                         <!-- Add Expense Form -->
-                        <form action="{{ route('budgets.update', $budget) }}" method="POST" class="mt-2">
+                        <form action="{{ route('budgets.add-expense', $budget) }}" method="POST" class="mt-2">
                             @csrf
-                            @method('PUT')
                             <div class="flex space-x-4">
                                 <div class="flex-1">
                                     <x-input-label for="amount_{{ $budget->id }}" :value="__('Add Expense')" class="sr-only" />

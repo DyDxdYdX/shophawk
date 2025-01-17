@@ -80,27 +80,17 @@ class PostController extends Controller
             ->with('success', 'Post updated successfully!');
     }
 
-    public function destroy(Post $post, Request $request)
+    public function destroy(Post $post)
     {
-        // Check if user is authorized to delete this post
-        $this->authorize('delete', $post);
-        
-        // If an admin is deleting someone else's post, require and validate reason
-        if (auth()->user()->is_admin && auth()->id() !== $post->user_id) {
-            $validated = $request->validate([
-                'reason' => 'required|string|max:255'
-            ]);
+        if (auth()->user()->is_admin) {
+            $reason = request('reason') ?? 'No reason provided';
+            $post->user->notify(new PostDeletedNotification($post, auth()->user(), $reason));
+            $post->delete();
             
-            $post->user->notify(new PostDeletedNotification(
-                $post, 
-                auth()->user(),
-                $validated['reason']
-            ));
+            return redirect()->route('posts.index')
+                ->with('success', 'Post has been deleted successfully.');
         }
-        
-        $post->delete();
 
-        return redirect()->route('posts.index')
-            ->with('success', 'Post deleted successfully!');
+        // Handle non-admin delete logic...
     }
 } 

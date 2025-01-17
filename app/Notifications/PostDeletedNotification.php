@@ -30,7 +30,7 @@ class PostDeletedNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'message' => "Your post '{$this->post->title}' was deleted by admin {$this->admin->name}",
+            'message' => "Your post '{$this->post->title}' was deleted by admin {$this->admin->name} for the following reason: {$this->reason}",
             'reason' => $this->reason,
             'admin_id' => $this->admin->id,
             'post_title' => $this->post->title
