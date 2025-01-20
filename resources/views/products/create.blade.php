@@ -1,51 +1,62 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create Product') }}
-        </h2>
-    </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('products.store') }}">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold">Add Product</h1>
+                        <a href="{{ route('products.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            Back to Products
+                        </a>
+                    </div>
+
+                    @if ($errors->any())
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('products.store') }}" method="POST" class="space-y-6">
                         @csrf
 
-                        <div class="mb-4">
-                            <x-input-label for="title" :value="__('Title')" />
-                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title')" required autofocus />
-                            <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                            <input type="text" name="title" id="title" value="{{ old('title') }}" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="product_link" :value="__('Product Link')" />
-                            <x-text-input id="product_link" class="block mt-1 w-full" type="url" name="product_link" :value="old('product_link')" required />
-                            <x-input-error :messages="$errors->get('product_link')" class="mt-2" />
+                        <div>
+                            <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
+                            <input type="text" name="brand" id="brand" value="{{ old('brand') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="price" :value="__('Price')" />
-                            <x-text-input id="price" class="block mt-1 w-full" type="number" name="price" step="0.01" :value="old('price')" required />
-                            <x-input-error :messages="$errors->get('price')" class="mt-2" />
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700">Price (RM)</label>
+                            <input type="number" step="0.01" name="price" id="price" value="{{ old('price') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="img_link" :value="__('Image Link')" />
-                            <x-text-input id="img_link" class="block mt-1 w-full" type="url" name="img_link" :value="old('img_link')" required />
-                            <x-input-error :messages="$errors->get('img_link')" class="mt-2" />
+                        <div>
+                            <label for="product_link" class="block text-sm font-medium text-gray-700">Product Link</label>
+                            <input type="url" name="product_link" id="product_link" value="{{ old('product_link') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="brand" :value="__('Brand')" />
-                            <x-text-input id="brand" class="block mt-1 w-full" type="text" name="brand" :value="old('brand')" />
-                            <x-input-error :messages="$errors->get('brand')" class="mt-2" />
+                        <div>
+                            <label for="img_link" class="block text-sm font-medium text-gray-700">Image Link</label>
+                            <input type="url" name="img_link" id="img_link" value="{{ old('img_link') }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ml-4">
-                                {{ __('Create Product') }}
-                            </x-primary-button>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Create Product
+                            </button>
                         </div>
                     </form>
                 </div>
