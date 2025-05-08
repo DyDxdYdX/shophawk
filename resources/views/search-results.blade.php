@@ -144,11 +144,6 @@
                                         <span class="text-base font-bold text-red-600">
                                             RM{{ $product['price'] }}
                                         </span>
-                                        @if($product['discount'] > 0)
-                                            <span class="text-xs text-red-600 font-medium">
-                                                -{{ $product['discount'] }}%
-                                            </span>
-                                        @endif
                                     </div>
                                     
                                     @if($product['brand'])
@@ -208,11 +203,6 @@
                                         <span class="text-base font-bold text-red-600">
                                             RM{{ $product['price'] }}
                                         </span>
-                                        @if($product['discount'] > 0)
-                                            <span class="text-xs text-red-600 font-medium">
-                                                -{{ $product['discount'] }}%
-                                            </span>
-                                        @endif
                                     </div>
                                     
                                     @if($product['brand'])

@@ -40,19 +40,21 @@ class ProductSearchController extends Controller
 
     private function getShopeeProducts($keyword)
     {
-        // Read JSON file
-        $jsonData = file_get_contents(public_path('json/shopee_data.json'));
-        $products = json_decode($jsonData, true);
         
-        // Filter products based on keyword (case-insensitive)
-        $filteredProducts = array_filter($products, function($product) use ($keyword) {
-            return stripos($product['title'], $keyword) !== false || 
-                   stripos($product['brand'], $keyword) !== false;
-        });
+        // // Read JSON file
+        // $jsonData = file_get_contents(public_path('json/shopee_data.json'));
+        // $products = json_decode($jsonData, true);
+        
+        // // Filter products based on keyword (case-insensitive)
+        // $filteredProducts = array_filter($products, function($product) use ($keyword) {
+        //     return stripos($product['title'], $keyword) !== false || 
+        //            stripos($product['brand'], $keyword) !== false;
+        // });
 
-        return array_values($filteredProducts); // Reset array keys
+        // return array_values($filteredProducts); // Reset array keys
+        
 
-        /* API Implementation
+        /* API Implementation */
         $curl = curl_init();
         
         curl_setopt_array($curl, [
@@ -102,24 +104,26 @@ class ProductSearchController extends Controller
         }
 
         return $formattedProducts;
-        */
+        
     }
 
     private function getLazadaProducts($keyword)
     {
-        // Read JSON file
-        $jsonData = file_get_contents(public_path('json/lazada_data.json'));
-        $products = json_decode($jsonData, true);
         
-        // Filter products based on keyword (case-insensitive)
-        $filteredProducts = array_filter($products, function($product) use ($keyword) {
-            return stripos($product['title'], $keyword) !== false || 
-                   stripos($product['brand'], $keyword) !== false;
-        });
+        // // Read JSON file
+        // $jsonData = file_get_contents(public_path('json/lazada_data.json'));
+        // $products = json_decode($jsonData, true);
+        
+        // // Filter products based on keyword (case-insensitive)
+        // $filteredProducts = array_filter($products, function($product) use ($keyword) {
+        //     return stripos($product['title'], $keyword) !== false || 
+        //            stripos($product['brand'], $keyword) !== false;
+        // });
 
-        return array_values($filteredProducts); // Reset array keys
+        // return array_values($filteredProducts); // Reset array keys
+        
 
-        /* API Implementation
+        /* API Implementation */
         $curl = curl_init();
         
         curl_setopt_array($curl, [
@@ -160,8 +164,6 @@ class ProductSearchController extends Controller
                     'title' => $item['title'] ?? 'No title',
                     'price' => $item['price_info']['sale_price'] ?? $item['price'] ?? '0.00',
                     'brand' => $item['brand'] ?? 'No brand',
-                    'discount' => isset($item['price_info']['origin_price']) ? 
-                        round((1 - ($item['price_info']['sale_price'] / $item['price_info']['origin_price'])) * 100) . '%' : '0%',
                     'liked_count' => $item['review_info']['review_count'] ?? 0,
                     'comment_count' => $item['comment_count'] ?? 0,
                     'shop_name' => $item['shop_info']['shop_name'] ?? 'Unknown Shop',
@@ -171,7 +173,7 @@ class ProductSearchController extends Controller
         }
 
         return $formattedProducts;
-        */
+        
     }
 
     private function getLocalProducts($keyword)

@@ -89,11 +89,23 @@
                     
                     messages.forEach(message => {
                         const isCurrentUser = message.sender_id === {{ auth()->id() }};
+                        const date = new Date(message.created_at);
+                        const timeString = date.toLocaleTimeString('default', { 
+                            hour: '2-digit', 
+                            minute: '2-digit'
+                        });
+                        const dateString = date.toLocaleDateString('default', {
+                            month: 'short',
+                            day: 'numeric'
+                        });
                         const messageHtml = `
                             <div class="mb-4 ${isCurrentUser ? 'text-right' : 'text-left'}">
                                 <div class="inline-block">
                                     <div class="${isCurrentUser ? 'bg-indigo-500 text-white' : 'bg-gray-100'} px-4 py-2 rounded-lg text-left">
                                         ${message.message}
+                                        <div class="text-[10px] ${isCurrentUser ? 'text-gray-200' : 'text-gray-500'} mt-1">
+                                            ${dateString} at ${timeString}
+                                        </div>
                                     </div>
                                     ${isCurrentUser ? `
                                         <div class="text-[10px] mt-1 text-gray-400 text-right">

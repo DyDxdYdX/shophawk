@@ -14,7 +14,7 @@ class NewsController extends Controller
             $query->where('status', 'published');
         })->orderBy('created_at', 'desc')->paginate(10);
 
-        \Log::info('News Index Query', [
+        Log::info('News Index Query', [
             'current_time' => now()->toDateTimeString(),
             'articles' => $news->map(function($article) {
                 return [
