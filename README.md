@@ -6,7 +6,7 @@
 
 ## About ShopHawk
 
-ShopHawk is a modern e-commerce platform built with Laravel and powered by cutting-edge web technologies. It provides a robust and scalable solution for managing online stores with an intuitive user interface and powerful backend capabilities.
+ShopHawk is a modern e-commerce platform built with Laravel and powered by cutting-edge web technologies. It provides a robust and scalable solution for searching online product through multiple e-commerse sites.
 
 ### Key Features
 
@@ -16,18 +16,15 @@ ShopHawk is a modern e-commerce platform built with Laravel and powered by cutti
 - 🛡️ Secure authentication system
 - 📱 Mobile-friendly design
 - 🔍 Advanced product search
-- 🛒 Shopping cart functionality
-- 💳 Secure payment processing
 
 ## Tech Stack
 
-- **Backend:** Laravel 10
+- **Backend:** Laravel 11
 - **Frontend:** 
   - Tailwind CSS
   - Vite
   - JavaScript
 - **Database:** MySQL
-- **Authentication:** Laravel Sanctum
 
 ## Getting Started
 
@@ -85,4 +82,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, please email [your-email@example.com](mailto:your-email@example.com) or open an issue in the GitHub repository.
+For support, please email [dydxsoft@gmail.com](mailto:dydxsoft@gmail.com) or open an issue in the GitHub repository.
